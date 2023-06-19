@@ -11,14 +11,14 @@
             馬上創建
         </button>
     </div>
-    <SearchBox />
+    <Test />
 </template>
 
 <script>
-import SearchBox from "../components/SearchBox.vue"
+import Test from "../components/Questions.vue"
 export default {
     components: {
-        SearchBox
+        Test
     }
 };
 </script>

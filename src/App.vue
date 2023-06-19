@@ -11,9 +11,9 @@ export default {
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen">
+  <div class="flex flex-col min-h-screen items-center">
     <HeaderView />
-    <div class="flex-grow p-5 w-4/5 justify-center items-center border-red-500 border-opacity-100">
+    <div class="flex-grow p-5 w-2/3 ">
       <RouterView />
     </div>
     <FooterView />
