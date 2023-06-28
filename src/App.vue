@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen items-center">
+  <div class="flex flex-col min-h-screen items-center bg">
     <HeaderView />
     <div class="flex-grow p-5 w-2/3 ">
       <RouterView />
@@ -20,4 +20,8 @@ export default {
   </div>
 </template>
 
-<style scoped></style>
+<style>
+.bg {
+  background-image: url(./assets/pic/bg.jpg);
+}
+</style>
