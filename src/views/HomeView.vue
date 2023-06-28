@@ -11,7 +11,9 @@
             馬上創建
         </button>
     </div>
-    <Test />
+    <div class="test">
+        <Test />
+    </div>
 </template>
 
 <script>
@@ -23,4 +25,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.test {
+    height: 350px;
+}
+</style>
