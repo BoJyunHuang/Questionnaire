@@ -1,6 +1,6 @@
 <template>
-    <div class="w-4/5 flex items-center bg-gray-700 border-4 border-double border-white p-4 rounded-md">
-        <table class=" w-4/5 m-5">
+    <div class="flex items-center bg-gray-700 border-4 border-double border-white p-4 rounded-md">
+        <table class="m-5">
             <tr>
                 <th><label class="text-center text-white">問卷標題</label> </th>
                 <td><label for="search"
@@ -43,6 +43,3 @@ export default {
 
 }
 </script>
-<style lang="">
-    
-</style>
