@@ -1,4 +1,6 @@
 <script>
+import { mapState } from "pinia";
+import indexStore from "../stores/counter";
 export default {
     props: { // 來自父層
         columns: { // 為表個欄位名稱
@@ -11,7 +13,6 @@ export default {
             type: Number,
             default: 10
         },
-        showChooseButton: false // 顯示選擇按鈕
     },
     data() {
         return {
@@ -20,6 +21,7 @@ export default {
         };
     },
     computed: {
+        ...mapState(indexStore, ["builder"]),
         totalPages() { // 計算總頁數的方法
             return Math.ceil(this.data.length / this.itemsPerPage);
         },
@@ -65,6 +67,12 @@ export default {
         }, chooseItem() {
             const list = this.paginatedData.filter(item => item.selected)
             this.$emit('choose', list); // 触发choose事件并将索引作为参数传递给父组件
+        },
+        toQPage(item) {
+            this.$emit('qPage', item);
+        },
+        toStatics(item) {
+            this.$emit('statics', item);
         }
     },
     watch: {
@@ -80,18 +88,26 @@ export default {
         <table class="min-w-full divide-y divide-gray-500 bg-white border-separate border border-slate-500 ">
             <thead> <!-- 標題名稱 -->
                 <tr> <!-- 使用迴圈印出"標題名稱" -->
-                    <th class="border border-slate-600" v-if="showChooseButton"></th>
+                    <th class="border border-slate-600" v-if="builder"></th>
+                    <th class="border border-slate-600">#</th>
+                    <th class="border border-slate-600">標題</th>
                     <th class="border border-slate-600" v-for="column in columns">{{ column.value }}</th>
                     <th class="border border-slate-600">數據統計</th>
                 </tr>
             </thead>
             <tbody> <!-- 表個內容 -->
                 <tr v-for="(item, index) in paginatedData" :key="item.id"> <!-- 印出該分頁筆數(列) -->
-                    <td class="border border-slate-600 text-center" v-if="showChooseButton"><input type="checkbox" id=item
+                    <td class="border border-slate-600 text-center" v-if="builder"><input type="checkbox" id=item
                             v-model="item.selected"></td>
+                    <td class="border border-slate-600 text-center">{{ item['serialNumber'] }}</td>
+                    <td class="border border-slate-600 text-center">
+                        <a class="underline hover:no-underline" @click="toQPage(item)">{{ item['title'] }}</a>
+                    </td>
                     <td class="border border-slate-600 text-center" v-for="column in columns">{{ item[column.key] }}</td>
                     <!-- 印出該分頁對應標題的內容(欄) -->
-                    <td class="border border-slate-600 text-center"><button @click="editItem(item)">觀看</button></td>
+                    <td class="border border-slate-600 text-center">
+                        <a class="underline hover:no-underline" @click="toStatics(item)">觀看</a>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -101,7 +117,7 @@ export default {
             <ul class="inline-flex items-center -space-x-px">
                 <li> <!-- 前頁 -->
                     <a href="#"
-                        class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
                         aria-label="Previous" @click="previousPage" :disabled="currentPage === 1">
                         <span class="sr-only">Previous</span>
                         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
@@ -114,30 +130,30 @@ export default {
                 </li> <!-- 至該分頁 -->
                 <li v-if="currentPage > 3">
                     <a href="#"
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
                         @click="goToPage(1)">1</a>
                 </li>
                 <li v-if="currentPage > 4">
                     <span
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">...</span>
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white">...</span>
                 </li>
                 <li v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }">
                     <a href="#"
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
                         @click="goToPage(page)">{{ page }}</a>
                 </li>
                 <li v-if="currentPage < totalPages - 3">
                     <span
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">...</span>
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white">...</span>
                 </li>
                 <li v-if="currentPage < totalPages - 2">
                     <a href="#"
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
                         @click="goToPage(totalPages)">{{ totalPages }}</a>
                 </li>
                 <li> <!-- 後頁 -->
                     <a href="#"
-                        class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
                         @click="nextPage" :disabled="currentPage === totalPages">
                         <span class="sr-only">Next</span>
                         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"

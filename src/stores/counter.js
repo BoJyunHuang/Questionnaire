@@ -3,9 +3,12 @@ import { defineStore } from 'pinia'
 export default defineStore('indexStore', {
   state: () => ({
     user: false,
-    builder: false
+    builder: false,
+    title: '',
   }),
-  getters: {},
+  getters: {
+    getTitle: (state) => `${state.title}`,
+  },
   actions: {
     userIn() {
       this.user = true
@@ -16,6 +19,9 @@ export default defineStore('indexStore', {
     refresh() {
       this.user = false
       this.builder = false
+    },
+    setTitle(name) {
+      this.title = name
     }
   }
 })

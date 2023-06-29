@@ -1,8 +1,8 @@
 <template>
-    <div class="flex items-center bg-gray-700 border-4 border-double border-white p-4 rounded-md">
+    <div class="flex items-center bg-white border-4 border-double border-gray-500 p-4 rounded-md">
         <table class="m-5">
             <tr>
-                <th><label class="text-center text-white">問卷標題</label> </th>
+                <th><label class="text-center">問卷標題</label> </th>
                 <td><label for="search"
                         class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-black">Search</label>
                     <div class="relative">
@@ -21,7 +21,7 @@
                 </td>
             </tr>
             <tr>
-                <th><label class="text-center text-white">開始 / 結束</label></th>
+                <th><label class="text-center">開始 / 結束</label></th>
                 <td class="flex">
                     <input type="datetime-local" id="search"
                         class="block w-full p-4 pl-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-500 dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -33,7 +33,7 @@
             </tr>
         </table>
         <button
-            class="ml-5 bg-transparent hover:bg-gray-500 text-white font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded">
+            class="ml-5 bg-transparent hover:bg-gray-500 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded">
             搜尋
         </button>
     </div>
