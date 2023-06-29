@@ -10,7 +10,7 @@
                 <i class="fa-solid fa-plus fa-xl" style="color: #374151;"></i>
             </button>
         </div>
-        <Table :columns="column" :data="qnData" @qPage="toQuestionPage" @statics="toStatics" />
+        <Table :columns="column" :data="formattedData" @qPage="toQuestionPage" @statics="toStatics" />
     </div>
 </template>
 
@@ -37,20 +37,31 @@ export default {
         ...mapState(indexStore, ["builder"]),
     },
     methods: {
-        ...mapActions(indexStore, ["setTitle"]),
+        ...mapActions(indexStore, ["setQuestionnaire"]),
         findAllQn() {
             fetch("http://localhost:8080/show_all_questionnaires")
                 .then(res => res.json())
                 .then(data => this.qnData = data.questionnaire_list)
         },
         toQuestionPage(item) {
-            this.setTitle(item.title)
+            this.setQuestionnaire(item)
             this.$router.push('/page')
         },
         toStatics(item) {
-            this.setTitle(item.title)
+            this.setQuestionnaire(item)
             this.$router.push('/static')
         }
+    },
+    computed: {
+        formattedData() {
+            return this.qnData.map(item => {
+                return {
+                    ...item,
+                    startTime: item.startTime.replace('T', ' '),
+                    endTime: item.endTime.replace('T', ' ')
+                };
+            });
+        },
     }
 
 }

@@ -4,6 +4,7 @@ export default defineStore('indexStore', {
   state: () => ({
     user: false,
     builder: false,
+    questionnaire: null,
     title: '',
   }),
   getters: {
@@ -19,9 +20,16 @@ export default defineStore('indexStore', {
     refresh() {
       this.user = false
       this.builder = false
+      this.questionnaire = null
+      this.title = ''
     },
-    setTitle(name) {
-      this.title = name
-    }
+    setQuestionnaire(item) {
+      this.questionnaire = item
+      this.title = item.title
+    },
+    erase() {
+      this.questionnaire = null
+      this.title = ''
+    },
   }
 })
