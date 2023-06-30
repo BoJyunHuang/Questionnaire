@@ -13,7 +13,7 @@ export default {
 <template>
   <div class="flex flex-col min-h-screen items-center bg">
     <HeaderView />
-    <div class="flex-grow p-5 w-4/5 ">
+    <div class="flex-grow p-5 w-2/5 ">
       <RouterView />
     </div>
     <FooterView />

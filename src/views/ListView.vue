@@ -2,7 +2,7 @@
     <div>
         <SearchBox />
         <br>
-        <div class="m-2" v-if="builder">
+        <div class="m-2" v-if="this.builder">
             <button class="m-2">
                 <i class="fa-solid fa-trash fa-xl" style="color: #374151;"></i>
             </button>
@@ -55,10 +55,12 @@ export default {
     computed: {
         formattedData() {
             return this.qnData.map(item => {
+                const startParts = item.startTime.split('T')
+                const endParts = item.endTime.split('T')
                 return {
                     ...item,
-                    startTime: item.startTime.replace('T', ' '),
-                    endTime: item.endTime.replace('T', ' ')
+                    startTime: startParts[0],
+                    endTime: endParts[0]
                 };
             });
         },

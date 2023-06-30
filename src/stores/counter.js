@@ -9,6 +9,7 @@ export default defineStore('indexStore', {
   }),
   getters: {
     getTitle: (state) => `${state.title}`,
+    getbuilder: (state) => state.builder
   },
   actions: {
     userIn() {
