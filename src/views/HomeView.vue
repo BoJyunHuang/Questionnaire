@@ -20,20 +20,27 @@
 </template>
 
 <script>
-import { mapActions } from "pinia";
+import { mapState, mapActions } from "pinia";
 import indexStore from "../stores/counter";
 export default {
     methods: {
         ...mapActions(indexStore, ["userIn", "builderIn"]),
         userPage() {
             this.userIn()
-            this.$router.push('/list')
+            this.$router.push({ path: '/list', query: { p1: String(this.builder) } })
         },
         builderPage() {
             this.builderIn()
+
+            this.$router.push({ path: '/list', query: { p1: String(this.builder) } })
+        },
+        nextPage() {
             this.$router.push('/list')
         }
     },
+    computed: {
+        ...mapState(indexStore, ['builder', 'user']),
+    }
 };
 </script>
 

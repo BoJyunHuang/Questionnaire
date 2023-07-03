@@ -101,12 +101,13 @@ export default {
                             v-model="item.selected"></td>
                     <td class="border border-slate-600 text-center">{{ item['serialNumber'] }}</td>
                     <td class="border border-slate-600 text-center">
-                        <a class="underline hover:no-underline" @click="toQPage(item)">{{ item['title'] }}</a>
+                        <a class="underline hover:no-underline cursor-pointer" @click="toQPage(item)">{{ item['title']
+                        }}</a>
                     </td>
                     <td class="border border-slate-600 text-center" v-for="column in columns">{{ item[column.key] }}</td>
                     <!-- 印出該分頁對應標題的內容(欄) -->
                     <td class="border border-slate-600 text-center">
-                        <a class="underline hover:no-underline" @click="toStatics(item)">觀看</a>
+                        <a class="underline hover:no-underline cursor-pointer" @click="toStatics(item)">觀看</a>
                     </td>
                 </tr>
             </tbody>

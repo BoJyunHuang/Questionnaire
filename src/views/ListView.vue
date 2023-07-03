@@ -2,7 +2,7 @@
     <div>
         <SearchBox />
         <br>
-        <div class="m-2">
+        <div class="m-2" v-if="builder">
             <button class="m-2">
                 <i class="fa-solid fa-trash fa-xl" style="color: #374151;"></i>
             </button>
@@ -17,7 +17,7 @@
 <script>
 import SearchBox from '../components/SearchBox.vue'
 import Table from '../components/Table.vue'
-import { mapState, mapActions } from "pinia";
+import { mapActions, mapState } from "pinia";
 import indexStore from "../stores/counter";
 export default {
     components: {
@@ -27,17 +27,22 @@ export default {
     data() {
         return {
             column: [{ key: 'status', value: '狀態' }, { key: 'startTime', value: '開始時間' }, { key: 'endTime', value: '結束時間' }],
-            qnData: []
+            qnData: [],
+            builder: null,
         }
+    },
+    created() {
+        this.builder = this.convertToBoolean(this.$route.query.p1);
     },
     mounted() {
         this.findAllQn()
-    },
-    computed: {
-        ...mapState(indexStore, ["builder"]),
+        this.builder = this.getbuilder
     },
     methods: {
         ...mapActions(indexStore, ["setQuestionnaire"]),
+        convertToBoolean(value) {
+            return value === 'true'; // 将字符串转换为布尔类型
+        },
         findAllQn() {
             fetch("http://localhost:8080/show_all_questionnaires")
                 .then(res => res.json())
@@ -56,6 +61,7 @@ export default {
         }
     },
     computed: {
+        ...mapState(indexStore, ['getbuilder']),
         formattedData() {
             return this.qnData.map(item => {
                 const startParts = item.startTime.split('T')
