@@ -4,46 +4,58 @@
             questionnaire.endTime.replace('T', ' ') }}</p>
         <p class="text-2xl m-12 px-32">{{ questionnaire.description }}</p>
         <p class="text-center text-2xl m-8">基本資料填寫</p>
-        <div>
-            <table class="table-auto w-full">
+        <div class="flex justify-center">
+            <table class="w-1/2 max-w-screen-md h-64 max-h-screen-2xl">
                 <tr>
-                    <th><label class="text-center">姓名</label> </th>
+                    <th><label class="text-center">姓名</label>
+                        <p class="text-white">warn</p>
+                    </th>
                     <td><label for="name"
                             class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-black">Search</label>
                         <input type="text" id="name"
-                            class="block p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-500 dark:bg-gray-200 dark:border-gray-800 dark:placeholder-gray-500 dark:text-black"
+                            class="block w-72 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-500 dark:bg-gray-200 dark:border-gray-800 dark:placeholder-gray-500 dark:text-black"
                             placeholder="name" required>
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snapp!</span>
+                            Some error message.</p>
                     </td>
-                    <!-- <tr>
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snapp!</span>
-                        Some error message.</p>
-                </tr> -->
                 </tr>
                 <tr>
-                    <th><label class="text-center">電話</label></th>
+                    <th><label class="text-center">電話</label>
+                        <p class="text-white">warn</p>
+                    </th>
                     <td><label for="phone"
                             class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-black">Search</label>
                         <input type="tel" id="phone"
-                            class="block p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-500 dark:bg-gray-200 dark:border-gray-800 dark:placeholder-gray-500 dark:text-black"
+                            class="block w-72 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-500 dark:bg-gray-200 dark:border-gray-800 dark:placeholder-gray-500 dark:text-black"
                             placeholder="0987-654-321" pattern="09[0-9]{2}-[0-9]{3}-[0-9]{3}" required>
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snapp!</span>
+                            Some error message.</p>
                     </td>
                 </tr>
                 <tr>
-                    <th><label class="text-center">Email</label></th>
+                    <th><label class="text-center">Email</label>
+                        <p class="text-white">warn</p>
+                    </th>
                     <td><label for="wmail"
                             class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-black">Search</label>
                         <input type="email" id="email"
-                            class="block p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-500 dark:bg-gray-200 dark:border-gray-800 dark:placeholder-gray-500 dark:text-black"
+                            class="block w-72 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-500 dark:bg-gray-200 dark:border-gray-800 dark:placeholder-gray-500 dark:text-black"
                             placeholder="john.doe@company.com" required>
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snapp!</span>
+                            Some error message.</p>
                     </td>
                 </tr>
                 <tr>
-                    <th><label class="text-center">年齡</label></th>
+                    <th><label class="text-center">年齡</label>
+                        <p class="text-white">warn</p>
+                    </th>
                     <td><label for="age"
                             class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-black">Search</label>
                         <input type="number" id="age"
-                            class="block p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-500 dark:bg-gray-200 dark:border-gray-800 dark:placeholder-gray-500 dark:text-black"
+                            class="block w-72 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-500 dark:bg-gray-200 dark:border-gray-800 dark:placeholder-gray-500 dark:text-black"
                             placeholder="age" required>
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snapp!</span>
+                            Some error message.</p>
                     </td>
                 </tr>
             </table>
@@ -54,8 +66,8 @@
                 返回
             </button>
             <button @click="nextPage"
-                class="border border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
-                確認
+                class="border-r border-b border-t border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
+                開始測驗
             </button>
         </div>
     </div>

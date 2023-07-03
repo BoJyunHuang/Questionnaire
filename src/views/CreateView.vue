@@ -1,58 +1,56 @@
 <template>
     <div class="inline-flex rounded-md shadow-sm" role="group">
         <button type="button" @click="to1Step"
-            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-l-lg hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-black dark:text-black dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700">
-
+            :class="{ 'bg-gray-600 text-white': activeStep === 1, 'text-gray-900': activeStep !== 1 }"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium bg-transparent border-l border-t border-r border-gray-900 rounded-tl-lg focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-600 focus:text-white">
             問卷項目
         </button>
         <button type="button" @click="to2Step"
-            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border-t border-b border-gray-900 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-black dark:text-black dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700">
-
+            :class="{ 'bg-gray-600 text-white': activeStep === 2, 'text-gray-900': activeStep !== 2 }"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium bg-transparent border-t border-r border-gray-900 focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-600 focus:text-white">
             問卷題目
         </button>
         <button type="button" @click="to3Step"
-            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border-l border-t border-b border-gray-900 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-black dark:text-black dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700">
-
+            :class="{ 'bg-gray-600 text-white': activeStep === 3, 'text-gray-900': activeStep !== 3 }"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium bg-transparent border-t border-r border-gray-900 focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-600 focus:text-white">
             問卷回饋
         </button>
         <button type="button" @click="to4Step"
-            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-r-md hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-black dark:text-black dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700">
-
+            :class="{ 'bg-gray-600 text-white': activeStep === 4, 'text-gray-900': activeStep !== 4 }"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium bg-transparent border-t border-r border-gray-900 rounded-tr-lg focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-600 focus:text-white">
             統計
         </button>
     </div>
-    <div v-if="step1" class="flex flex-col justify-center border border-gray-900 rounded">
-        <table class="m-5">
+    <div v-if="activeStep == 1" class="flex flex-col justify-center border border-gray-900">
+        <table class="m-12 mt-20">
             <tr>
                 <th><label class="text-center text-xl">問卷名稱</label> </th>
-                <td><input type="text" id="search"
-                        class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-500 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Questionnaire Title" required>
+                <td><input type="text" id="search" v-model="title"
+                        class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
+                        placeholder="標題" required>
                 </td>
             </tr>
             <tr>
-                <th><label class="text-center text-xl">問卷內容
+                <th class="align-top"><label class="text-center text-xl">問卷內容
                     </label> </th>
-                <td><label for="search"
-                        class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-black">Search</label>
-                    <input type="text" id="search"
-                        class="block w-full h-60 p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-500 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="description" required>
+                <td><textarea type="text" id="search" v-model="description"
+                        class="block resize-y text-top w-full h-64 p-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
+                        placeholder="長度150字內" required></textarea>
                 </td>
             </tr>
             <tr>
                 <th><label class="text-center text-xl">開始時間</label></th>
                 <td class="flex">
-                    <input type="date" id="startDate" v-model="now"
-                        class="block w-full p-4 pl-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-500 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    <input type="date" id="startDate" v-model="startTime" :min="minDate"
+                        class="block w-full p-4 pl-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
                         required>
                 </td>
             </tr>
             <tr>
                 <th><label class="text-center text-xl">結束時間</label></th>
                 <td class="flex">
-                    <input type="date" id="search"
-                        class="block w-full p-4 pl-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-500 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    <input type="date" id="search" v-model="endTime" :min="startTime"
+                        class="block w-full p-4 pl-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
                         required>
                 </td>
             </tr>
@@ -68,7 +66,7 @@
             </button>
         </div>
     </div>
-    <div v-if="step2" class="flex flex-col justify-center border border-gray-900 rounded">
+    <div v-if="activeStep == 2" class="flex flex-col justify-center border border-gray-900 rounded">
         <div class="flex ml-12 mt-12">
             <div class="flex mr-5">
                 <label for="question" class="flex items-center text-center text-xl mr-4">題目</label>
@@ -119,8 +117,7 @@
             </button>
         </div>
     </div>
-    <div v-if="step3" class="flex flex-col justify-center border border-gray-900 rounded">
-
+    <div v-if="activeStep == 3" class="flex flex-col justify-center border border-gray-900 rounded">
         <div class="flex justify-center p-4">
             <button @click="previousPage"
                 class="border border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">
@@ -132,7 +129,7 @@
             </button>
         </div>
     </div>
-    <div v-if="step4" class="flex flex-col justify-center border border-gray-900 rounded">
+    <div v-if="activeStep == 4" class="flex flex-col justify-center border border-gray-900 rounded">
         <p>米你統計</p>
         <div class="flex justify-center p-4">
             <button @click="previousPage"
@@ -155,39 +152,45 @@ export default {
     },
     data() {
         return {
-            now: this.getCurrentDate(),
-            step1: true,
-            step2: false,
-            step3: false,
-            step4: false,
+            title: '',
+            description: '',
+            startTime: this.getCurrentDate(),
+            endTime: this.getDefaultDate(),
+
             selectItems: 1,
+            activeStep: 1,
+            minDate: this.getCurrentDate(),
         }
     },
     methods: {
         toListPage() {
+            if (sessionStorage.getItem('newQuestionnaire')) {
+                sessionStorage.removeItem('newQuestionnaire')
+            }
             this.$router.push('/list')
         },
         to1Step() {
-            this.clearStep()
-            this.step1 = true
+            this.activeStep = 1
         },
         to2Step() {
-            this.clearStep()
-            this.step2 = true
+            if (!this.title || !this.description || !this.startTime || !this.endTime) {
+                window.alert("輸入不可空白!")
+            } else if (this.startTime) {
+            } else {
+                sessionStorage.setItem('newQuestionnaire', JSON.stringify({
+                    title: this.title,
+                    description: this.description,
+                    startTime: this.startTime,
+                    endTime: this.endTime
+                }))
+                this.activeStep = 2
+            }
         },
         to3Step() {
-            this.clearStep()
-            this.step3 = true
+            this.activeStep = 3
         },
         to4Step() {
-            this.clearStep()
-            this.step4 = true
-        },
-        clearStep() {
-            this.step1 = false
-            this.step2 = false
-            this.step3 = false
-            this.step4 = false
+            this.activeStep = 4
         },
         plusQ() {
             if (this.selectItems < 10) {
@@ -208,7 +211,15 @@ export default {
             const month = (now.getMonth() + 1).toString().padStart(2, '0');
             const day = now.getDate().toString().padStart(2, '0');
             return `${year}-${month}-${day}`;
-        }
+        },
+        getDefaultDate() {
+            const now = new Date();
+            now.setDate(now.getDate() + 7); // 将日期加7天
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        },
     },
 }
 </script>
