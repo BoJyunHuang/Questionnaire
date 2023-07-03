@@ -22,6 +22,10 @@ const router = createRouter({
       path: '/static',
       name: 'static',
       component: () => import("../views/StaticView.vue")
+    }, {
+      path: '/create',
+      name: 'create',
+      component: () => import("../views/CreateView.vue")
     },
   ]
 })

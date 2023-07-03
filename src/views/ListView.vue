@@ -2,12 +2,12 @@
     <div>
         <SearchBox />
         <br>
-        <div class="m-2" v-if="this.builder">
+        <div class="m-2">
             <button class="m-2">
                 <i class="fa-solid fa-trash fa-xl" style="color: #374151;"></i>
             </button>
             <button class=" m-2">
-                <i class="fa-solid fa-plus fa-xl" style="color: #374151;"></i>
+                <i class="fa-solid fa-plus fa-xl" style="color: #374151;" @click="buildQn"></i>
             </button>
         </div>
         <Table :columns="column" :data="formattedData" @qPage="toQuestionPage" @statics="toStatics" />
@@ -50,6 +50,9 @@ export default {
         toStatics(item) {
             this.setQuestionnaire(item)
             this.$router.push('/static')
+        },
+        buildQn() {
+            this.$router.push('/create')
         }
     },
     computed: {
@@ -65,6 +68,5 @@ export default {
             });
         },
     }
-
 }
 </script>
