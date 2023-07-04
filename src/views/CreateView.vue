@@ -76,9 +76,9 @@
             </div>
             <select name="kind" id="kind" v-model="kind"
                 class="block p-2 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50">
-                <option value="'單選方塊'">單選</option>
-                <option value="'多選方塊'">多選</option>
-                <option value="'文字'">文字</option>
+                <option value='單選方塊'>單選</option>
+                <option value='多選方塊'>多選</option>
+                <option value='文字'>文字</option>
             </select>
             <div class="flex ml-5">
                 <label for="not_empty" class="flex items-center text-center text-xl mr-1">必填</label>
@@ -302,7 +302,6 @@ export default {
                 'end_time': qn.endTime,
                 'question_amount': this.questionData.length
             }
-            console.log(body)
             if (this.oldQn) {
                 fetch("http://localhost:8080/revise_questionnaire", {
                     method: "POST",
@@ -325,12 +324,13 @@ export default {
                 }).then(res => res.json())
                     .then(data => window.alert(data.message))
             }
-            this.questionData.map(item => {
+            this.questionData = this.questionData.map(item => {
                 return {
                     ...item,
-                    qnNumber: this.newSerialNumber
+                    'qnNumber': this.newSerialNumber
                 }
             })
+            console.log(this.questionData)
             body = {
                 'questions_list': this.questionData
             }
