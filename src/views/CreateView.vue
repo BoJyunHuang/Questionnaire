@@ -61,7 +61,7 @@
                 取消
             </button>
             <button @click="to2Step"
-                class="border border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
+                class="border-t border-r border-b border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
                 下一步
             </button>
         </div>
@@ -70,32 +70,37 @@
         <div class="flex ml-12 mt-12">
             <div class="flex mr-5">
                 <label for="question" class="flex items-center text-center text-xl mr-4">題目</label>
-                <input type="text" id="search"
-                    class="block p-2 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-500 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                <input type="text" id="search" v-model="question"
+                    class="block p-2 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
                     placeholder="Questionnaire Title" required>
             </div>
-            <select name="kind" id="kind"
-                class="block p-2 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-500 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <select name="kind" id="kind" v-model="kind"
+                class="block p-2 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50">
                 <option value="'單選方塊'">單選</option>
                 <option value="'多選方塊'">多選</option>
+                <option value="'文字'">文字</option>
             </select>
             <div class="flex ml-5">
                 <label for="not_empty" class="flex items-center text-center text-xl mr-1">必填</label>
-                <input type="checkbox" id="not_empty" class="h-12">
+                <input type="checkbox" id="not_empty" class="h-12" v-model="notEmpty">
             </div>
         </div>
         <div class="flex ml-12 mt-3 relative">
             <label for="question" class="flex items-center text-center text-xl mt-2 absolute">選項</label>
             <div class="w-5/6 flex flex-wrap">
-                <input type="text" id="search" v-for="item in selectItems"
-                    class="block w-44 p-2 ml-14 my-1 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-500 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                <input type="text" v-for="(item, index) in selectItems" :key="index" v-model="selections[index]"
+                    class="block w-44 p-2 ml-14 my-1 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
                     placeholder="item" required>
             </div>
-            <button class="m-2 absolute right-14 mt-3">
+            <button class="m-2 absolute right-48 mt-3">
                 <i class="fa-solid fa-plus fa-xl" style="color: #374151;" @click="plusQ"></i>
             </button>
-            <button class="m-2 absolute right-6 mt-3">
+            <button class="m-2 absolute right-40 mt-3">
                 <i class="fa-solid fa-minus fa-xl" style="color: #374151;" @click="minusQ"></i>
+            </button>
+            <button @click="addQuestions"
+                class="absolute right-12 border border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">
+                加入
             </button>
         </div>
         <div class="mx-5">
@@ -103,8 +108,8 @@
                 <i class="fa-solid fa-trash fa-xl" style="color: #374151;"></i>
             </button>
         </div>
-        <div class="mx-4">
-            <Questions />
+        <div class="w-full mx-5">
+            <Questions :columns="questionColumn" :data="questionData" />
         </div>
         <div class="flex justify-center p-4">
             <button @click="to1Step"
@@ -112,7 +117,7 @@
                 上一步
             </button>
             <button @click="saveQandQ"
-                class="border border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
+                class="border-t border-r border-b border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
                 儲存
             </button>
         </div>
@@ -160,6 +165,13 @@ export default {
             selectItems: 1,
             activeStep: 1,
             minDate: this.getCurrentDate(),
+
+            questionColumn: [{ key: 'number', value: '題號' }, { key: 'question', value: '題目' }, { key: 'kind', value: '題型' }, { key: 'not_empty', value: '必填' }],
+            questionData: [],
+            question: '',
+            kind: '',
+            notEmpty: false,
+            selections: [],
         }
     },
     methods: {
@@ -175,13 +187,12 @@ export default {
         to2Step() {
             if (!this.title || !this.description || !this.startTime || !this.endTime) {
                 window.alert("輸入不可空白!")
-            } else if (this.startTime) {
             } else {
                 sessionStorage.setItem('newQuestionnaire', JSON.stringify({
-                    title: this.title,
-                    description: this.description,
-                    startTime: this.startTime,
-                    endTime: this.endTime
+                    'title': this.title,
+                    'description': this.description,
+                    'startTime': this.startTime,
+                    'endTime': this.endTime
                 }))
                 this.activeStep = 2
             }
@@ -202,8 +213,33 @@ export default {
                 this.selectItems--
             }
         },
+        addQuestions() {
+            if (!this.question || !this.kind) {
+                window.alert("輸入不可空白!")
+            } else {
+                let number = 1
+                if (this.questionData.length != 0) {
+                    number = this.questionData.length + 1
+                }
+                const q = {
+                    'number': number,
+                    'question': this.question,
+                    'kind': this.kind,
+                    'not_empty': this.notEmpty,
+                    'selection': JSON.stringify(this.selections)
+                }
+                this.questionData.push(q)
+                console.log(this.questionData)
+            }
+        },
         saveQandQ() {
-
+            const qn = sessionStorage.getItem('newQuestionnaire')
+            let body = {
+                'title': qn.title,
+                'description': qn.description,
+                'startTime': qn.startTime,
+                'endTime': qn.endTime
+            }
         },
         getCurrentDate() {
             const now = new Date();
