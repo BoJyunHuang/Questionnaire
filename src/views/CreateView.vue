@@ -104,12 +104,44 @@
             </button>
         </div>
         <div class="mx-5">
-            <button class="m-2">
+            <button class="m-2" @click="deleteQuestions">
                 <i class="fa-solid fa-trash fa-xl" style="color: #374151;"></i>
             </button>
         </div>
         <div class="w-full mx-5">
-            <Questions :columns="questionColumn" :data="questionData" />
+            <div class="relative overflow-y-auto shadow-md sm:rounded-lg h-96">
+                <table class="text-gray-100">
+                    <thead class="text-black uppercase bg-gray-300">
+                        <tr>
+                            <th scope="col" class="p-4">
+                                <div class="flex items-center">
+                                    <input id="checkbox-all-search" type="checkbox"
+                                        class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded">
+                                    <label for="checkbox-all-search" class="sr-only">checkbox</label>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-16 py-3" v-for="column in questionColumn">{{ column.value }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b text-black text-center hover:bg-gray-50" v-for="item in questionData"
+                            :key="item.id">
+                            <td class="w-4 p-4">
+                                <div class="flex items-center">
+                                    <input id="checkbox-table-search-1" type="checkbox" v-model="item.selected"
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                    <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                                </div>
+                            </td>
+                            <td v-for="column in questionColumn">{{ item[column.key] }}</td> <!-- 印出該分頁對應標題的內容(欄) -->
+                            <td class="flex items-center px-6 py-4 space-x-3">
+                                <a href="#" class="font-medium text-black hover:scale-110">編輯</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="flex justify-center p-4">
             <button @click="to1Step"
@@ -150,13 +182,12 @@
 </template>
 
 <script>
-import Questions from "../components/Questions.vue"
 export default {
     components: {
-        Questions
     },
     data() {
         return {
+            oldQn: null,
             title: '',
             description: '',
             startTime: this.getCurrentDate(),
@@ -166,13 +197,23 @@ export default {
             activeStep: 1,
             minDate: this.getCurrentDate(),
 
-            questionColumn: [{ key: 'number', value: '題號' }, { key: 'question', value: '題目' }, { key: 'kind', value: '題型' }, { key: 'not_empty', value: '必填' }],
+            questionColumn: [{ key: 'number', value: '題號' }, { key: 'question', value: '題目' }, { key: 'kind', value: '題型' }, { key: 'notEmpty', value: '必填' }],
             questionData: [],
             question: '',
             kind: '',
             notEmpty: false,
             selections: [],
+
+            item: [],
+            newSerialNumber: 0,
         }
+    },
+    created() {
+        this.oldQn = JSON.parse(this.$route.query.item)
+        this.title = this.oldQn.title
+        this.description = this.oldQn.description
+        this.startTime = this.oldQn.startTime
+        this.endTime = this.oldQn.endTime
     },
     methods: {
         toListPage() {
@@ -188,6 +229,9 @@ export default {
             if (!this.title || !this.description || !this.startTime || !this.endTime) {
                 window.alert("輸入不可空白!")
             } else {
+                if (this.oldQn != null) {
+                    this.findQuestions()
+                }
                 sessionStorage.setItem('newQuestionnaire', JSON.stringify({
                     'title': this.title,
                     'description': this.description,
@@ -225,21 +269,92 @@ export default {
                     'number': number,
                     'question': this.question,
                     'kind': this.kind,
-                    'not_empty': this.notEmpty,
+                    'notEmpty': this.notEmpty,
                     'selection': JSON.stringify(this.selections)
                 }
                 this.questionData.push(q)
-                console.log(this.questionData)
             }
         },
+        deleteQuestions() {
+            const list = this.questionData.filter(item => item.selected)
+            const serialNumbers = list.map(item => item.serialNumber);
+            const body = {
+                'serial_number_list': serialNumbers
+            }
+            fetch("http://localhost:8080/delete_questions", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }).then(res => res.json())
+                .then(data => window.alert(data.message))
+            this.findQuestions()
+        },
         saveQandQ() {
-            const qn = sessionStorage.getItem('newQuestionnaire')
+            const qn = JSON.parse(sessionStorage.getItem('newQuestionnaire'))
             let body = {
+                'serial_number': this.oldQn.serialNumber,
                 'title': qn.title,
                 'description': qn.description,
-                'startTime': qn.startTime,
-                'endTime': qn.endTime
+                'status': this.oldQn.status,
+                'start_time': qn.startTime,
+                'end_time': qn.endTime,
+                'question_amount': this.questionData.length
             }
+            console.log(body)
+            if (this.oldQn) {
+                fetch("http://localhost:8080/revise_questionnaire", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                }).then(res => res.json())
+                    .then(data => {
+                        window.alert(data.message)
+                    })
+                this.newSerialNumber = this.oldQn.serialNumber
+            } else {
+                fetch("http://localhost:8080/add_questionnaire", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                }).then(res => res.json())
+                    .then(data => window.alert(data.message))
+            }
+            this.questionData.map(item => {
+                return {
+                    ...item,
+                    qnNumber: this.newSerialNumber
+                }
+            })
+            body = {
+                'questions_list': this.questionData
+            }
+            fetch("http://localhost:8080/add_questions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }).then(res => res.json())
+                .then(data => window.alert(data.message))
+        },
+        findQuestions() {
+            const body = {
+                'qn_number': this.oldQn.serialNumber
+            }
+            fetch("http://localhost:8080/show_questions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }).then(res => res.json())
+                .then(data => this.questionData = data.questions_list)
         },
         getCurrentDate() {
             const now = new Date();

@@ -50,7 +50,11 @@ export default {
         },
         toQuestionPage(item) {
             this.setQuestionnaire(item)
-            this.$router.push('/page')
+            if (this.getbuilder) {
+                this.$router.push({ path: '/create', query: { item: JSON.stringify(item) } })
+            } else {
+                this.$router.push('/page')
+            }
         },
         toStatics(item) {
             this.setQuestionnaire(item)
