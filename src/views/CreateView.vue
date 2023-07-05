@@ -41,7 +41,7 @@
             <tr>
                 <th><label class="text-center text-xl">開始時間</label></th>
                 <td class="flex">
-                    <input type="date" id="startDate" v-model="startTime" :min="minDate"
+                    <input type="date" id="startDate" v-model="startDate" :min="minDate"
                         class="block w-full p-4 pl-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
                         required>
                 </td>
@@ -49,7 +49,7 @@
             <tr>
                 <th><label class="text-center text-xl">結束時間</label></th>
                 <td class="flex">
-                    <input type="date" id="search" v-model="endTime" :min="startTime"
+                    <input type="date" id="search" v-model="endDate" :min="startDate"
                         class="block w-full p-4 pl-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
                         required>
                 </td>
@@ -82,7 +82,7 @@
             </select>
             <div class="flex ml-5">
                 <label for="not_empty" class="flex items-center text-center text-xl mr-1">必填</label>
-                <input type="checkbox" id="not_empty" class="h-12" v-model="notEmpty">
+                <input type="checkbox" id="not_empty" class="h-12" v-model="isRequired">
             </div>
         </div>
         <div class="flex ml-12 mt-3 relative">
@@ -100,7 +100,7 @@
             </button>
             <button @click="addQuestions"
                 class="absolute right-12 border border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">
-                加入
+                儲存
             </button>
         </div>
         <div class="mx-5">
@@ -136,7 +136,8 @@
                             </td>
                             <td v-for="column in questionColumn">{{ item[column.key] }}</td> <!-- 印出該分頁對應標題的內容(欄) -->
                             <td class="flex items-center px-6 py-4 space-x-3">
-                                <a href="#" class="font-medium text-black hover:scale-110" @click="reviseQuestions">編輯</a>
+                                <a href="#" class="font-medium text-black hover:scale-110"
+                                    @click="reviseQuestions(item)">編輯</a>
                             </td>
                         </tr>
                     </tbody>
@@ -190,21 +191,22 @@ export default {
             oldQn: null,
             title: '',
             description: '',
-            startTime: this.getCurrentDate(),
-            endTime: this.getDefaultDate(),
+            startDate: this.getDate(0),
+            endDate: this.getDate(7),
 
             selectItems: 1,
             activeStep: 1,
-            minDate: this.getCurrentDate(),
+            minDate: this.getDate(0),
 
-            questionColumn: [{ key: 'number', value: '題號' }, { key: 'question', value: '題目' }, { key: 'kind', value: '題型' }, { key: 'notEmpty', value: '必填' }],
+            questionColumn: [{ key: 'question', value: '題目' }, { key: 'kind', value: '題型' }, { key: 'isRequired', value: '必填' }],
             questionData: [],
+            questionDataIndex: -1,
+
             question: '',
             kind: '',
-            notEmpty: false,
+            isRequired: false,
             selections: [],
 
-            item: [],
             newSerialNumber: 0,
         }
     },
@@ -213,22 +215,20 @@ export default {
             this.oldQn = JSON.parse(this.$route.query.item)
             this.title = this.oldQn.title
             this.description = this.oldQn.description
-            this.startTime = this.oldQn.startTime
-            this.endTime = this.oldQn.endTime
+            this.startDate = this.oldQn.startDate
+            this.endDate = this.oldQn.endDate
         }
     },
     methods: {
         toListPage() {
-            if (sessionStorage.getItem('newQuestionnaire')) {
-                sessionStorage.removeItem('newQuestionnaire')
-            }
+            sessionStorage.removeItem('newQuestionnaire')
             this.$router.push('/list')
         },
         to1Step() {
             this.activeStep = 1
         },
         to2Step() {
-            if (!this.title || !this.description || !this.startTime || !this.endTime) {
+            if (!this.title || !this.description || !this.startDate || !this.endDate) {
                 window.alert("輸入不可空白!")
             } else {
                 if (this.oldQn != null) {
@@ -237,8 +237,8 @@ export default {
                 sessionStorage.setItem('newQuestionnaire', JSON.stringify({
                     'title': this.title,
                     'description': this.description,
-                    'startTime': this.startTime,
-                    'endTime': this.endTime
+                    'startDate': this.startDate,
+                    'endDate': this.endDate
                 }))
                 this.activeStep = 2
             }
@@ -250,41 +250,41 @@ export default {
             this.activeStep = 4
         },
         plusQ() {
-            if (this.selectItems < 10) {
-                this.selectItems++
-            }
+            this.selectItems += this.selectItems < 10 ? 1 : 0
         },
         minusQ() {
-            if (this.selectItems > 1) {
-                this.selectItems--
-            }
+            this.selectItems -= this.selectItems > 1 ? 1 : 0
         },
         addQuestions() {
             if (!this.question || !this.kind) {
                 window.alert("輸入不可空白!")
             } else {
-                let number = 1
-                if (this.questionData.length != 0) {
-                    number = this.questionData.length + 1
-                }
                 const q = {
-                    'number': number,
                     'question': this.question,
                     'kind': this.kind,
-                    'notEmpty': this.notEmpty,
+                    'isRequired': this.isRequired,
                     'selection': JSON.stringify(this.selections)
                 }
+                q.serialNumber = this.questionDataIndex > -1 ? this.questionDataIndex : null
                 this.questionData.push(q)
+
+                this.question = ''
+                this.kind = ''
+                this.isRequired = false
+                this.selections = []
             }
         },
-        reviseQuestions() {
-
+        reviseQuestions(item) {
+            this.questionDataIndex = item.id
+            this.question = item.question
+            this.kind = item.kind
+            this.isRequired = item.isRequired
+            this.selectItems = JSON.parse(item.selections).length
+            this.selections = JSON.parse(item.selections)
         },
         deleteQuestions() {
-            const list = this.questionData.filter(item => item.selected)
-            const serialNumbers = list.map(item => item.serialNumber);
             const body = {
-                'serial_number_list': serialNumbers
+                'serial_number_list': this.questionData.filter(item => item.selected).map(item => item.serialNumber)
             }
             fetch("http://localhost:8080/delete_questions", {
                 method: "DELETE",
@@ -299,15 +299,14 @@ export default {
         saveQandQ() {
             const qn = JSON.parse(sessionStorage.getItem('newQuestionnaire'))
             let body = {
-                'serial_number': this.oldQn.serialNumber,
+                // 'serial_number': this.oldQn.serialNumber,
                 'title': qn.title,
                 'description': qn.description,
-                'status': this.oldQn.status,
-                'start_time': qn.startTime,
-                'end_time': qn.endTime,
-                'question_amount': this.questionData.length
+                'start_time': qn.startDate,
+                'end_time': qn.endDate,
             }
             if (this.oldQn) {
+                body.serial_number = this.oldQn.serialNumber
                 fetch("http://localhost:8080/revise_questionnaire", {
                     method: "POST",
                     headers: {
@@ -329,6 +328,8 @@ export default {
                 }).then(res => res.json())
                     .then(data => window.alert(data.message))
             }
+
+
             this.questionData = this.questionData.map(item => {
                 return {
                     ...item,
@@ -361,16 +362,9 @@ export default {
             }).then(res => res.json())
                 .then(data => this.questionData = data.questions_list)
         },
-        getCurrentDate() {
+        getDate(m) {
             const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        },
-        getDefaultDate() {
-            const now = new Date();
-            now.setDate(now.getDate() + 7); // 将日期加7天
+            now.setDate(now.getDate() + m); // 将日期加7天
             const year = now.getFullYear();
             const month = (now.getMonth() + 1).toString().padStart(2, '0');
             const day = now.getDate().toString().padStart(2, '0');
