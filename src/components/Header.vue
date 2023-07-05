@@ -7,7 +7,6 @@
     </div>
     <div class="absolute top-10 right-5 text-3xl">
         <p v-if="builder">創建模式</p>
-        <p v-if="user">一般模式</p>
     </div>
 </template>
 
@@ -17,7 +16,7 @@ import { mapState, mapActions } from "pinia";
 import indexStore from "../stores/counter";
 export default {
     computed: {
-        ...mapState(indexStore, ["user", "builder", "getTitle"]),
+        ...mapState(indexStore, ["builder", "getTitle"]),
     },
     methods: {
         ...mapActions(indexStore, ["refresh"]),

@@ -136,7 +136,7 @@
                             </td>
                             <td v-for="column in questionColumn">{{ item[column.key] }}</td> <!-- 印出該分頁對應標題的內容(欄) -->
                             <td class="flex items-center px-6 py-4 space-x-3">
-                                <a href="#" class="font-medium text-black hover:scale-110">編輯</a>
+                                <a href="#" class="font-medium text-black hover:scale-110" @click="reviseQuestions">編輯</a>
                             </td>
                         </tr>
                     </tbody>
@@ -209,11 +209,13 @@ export default {
         }
     },
     created() {
-        this.oldQn = JSON.parse(this.$route.query.item)
-        this.title = this.oldQn.title
-        this.description = this.oldQn.description
-        this.startTime = this.oldQn.startTime
-        this.endTime = this.oldQn.endTime
+        if (this.$route.query.item) {
+            this.oldQn = JSON.parse(this.$route.query.item)
+            this.title = this.oldQn.title
+            this.description = this.oldQn.description
+            this.startTime = this.oldQn.startTime
+            this.endTime = this.oldQn.endTime
+        }
     },
     methods: {
         toListPage() {
@@ -274,6 +276,9 @@ export default {
                 }
                 this.questionData.push(q)
             }
+        },
+        reviseQuestions() {
+
         },
         deleteQuestions() {
             const list = this.questionData.filter(item => item.selected)

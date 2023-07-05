@@ -24,23 +24,15 @@ import { mapState, mapActions } from "pinia";
 import indexStore from "../stores/counter";
 export default {
     methods: {
-        ...mapActions(indexStore, ["userIn", "builderIn"]),
+        ...mapActions(indexStore, ["builderIn"]),
         userPage() {
-            this.userIn()
-            this.$router.push({ path: '/list', query: { p1: String(this.builder) } })
+            this.$router.push('/list')
         },
         builderPage() {
             this.builderIn()
-
             this.$router.push({ path: '/list', query: { p1: String(this.builder) } })
         },
-        nextPage() {
-            this.$router.push('/list')
-        }
     },
-    computed: {
-        ...mapState(indexStore, ['builder', 'user']),
-    }
 };
 </script>
 

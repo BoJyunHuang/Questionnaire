@@ -4,7 +4,7 @@
         <br>
         <div class="m-2" v-if="builder">
             <button class="m-2">
-                <i class="fa-solid fa-trash fa-xl" style="color: #374151;"></i>
+                <i class="fa-solid fa-trash fa-xl" style="color: #374151;" @click='deleteQn'></i>
             </button>
             <button class=" m-2">
                 <i class="fa-solid fa-plus fa-xl" style="color: #374151;" @click="buildQn"></i>
@@ -26,7 +26,7 @@ export default {
     },
     data() {
         return {
-            column: [{ key: 'status', value: '狀態' }, { key: 'startTime', value: '開始時間' }, { key: 'endTime', value: '結束時間' }],
+            column: [{ key: 'status', value: '狀態' }, { key: 'startDate', value: '開始時間' }, { key: 'endDate', value: '結束時間' }],
             qnData: [],
             builder: null,
         }
@@ -62,18 +62,17 @@ export default {
         },
         buildQn() {
             this.$router.push('/create')
+        },
+        deleteQn() {
+
         }
     },
     computed: {
         ...mapState(indexStore, ['getbuilder']),
         formattedData() {
             return this.qnData.map(item => {
-                const startParts = item.startTime.split('T')
-                const endParts = item.endTime.split('T')
                 return {
                     ...item,
-                    startTime: startParts[0],
-                    endTime: endParts[0]
                 };
             });
         },
