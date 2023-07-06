@@ -91,9 +91,14 @@ export default {
                 this.$router.push('/page')
             }
         },
-        toStatics(item) {
-            this.setQuestionnaire(item)
-            this.$router.push('/static')
+        async toStatics(item) {
+            try {
+                this.setQuestionnaire(item)
+                await new Promise(resolve => setTimeout(resolve, 100));
+                this.$router.push('/static')
+            } catch (error) {
+                console.error(error);
+            }
         },
         buildQn() {
             this.$router.push('/create')
