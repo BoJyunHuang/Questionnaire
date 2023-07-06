@@ -54,7 +54,7 @@
     </div>
 </template>
 <script>
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 import indexStore from "../stores/counter";
 export default {
     data() {
@@ -69,6 +69,7 @@ export default {
         ...mapState(indexStore, ['questionnaire']),
     },
     methods: {
+        ...mapActions(indexStore, ["erase"]),
         findQuestions() {
             const body = {
                 "qn_number": this.questionnaire.serialNumber,

@@ -7,7 +7,7 @@
 <script lang="ts">
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'vue-chartjs';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataLabels from '../../node_modules/chartjs-plugin-datalabels';
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 export default {

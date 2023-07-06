@@ -50,14 +50,14 @@ export default {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: (value) => `${value / 10000} 万円`,
+                            callback: (value) => `${value} 万円`,
                         },
                     },
                 },
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: (context) => `${context.parsed.y / 10000} 万円`,
+                            label: (context) => `${context.parsed.y} 万円`,
                         },
                     },
                     datalabels: {
