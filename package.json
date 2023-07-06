@@ -10,7 +10,9 @@
   "dependencies": {
     "chart.js": "^4.3.0",
     "chartjs-plugin-datalabels": "^2.2.0",
+    "gsap": "^3.12.2",
     "pinia": "^2.1.4",
+    "split-text": "^1.0.0",
     "vue": "^3.3.4",
     "vue-chartjs": "^5.2.0",
     "vue-router": "^4.2.2"

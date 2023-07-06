@@ -1,16 +1,18 @@
 <template>
     <div>
-        <p>統計</p>
+        <p class="text-4xl">問題統計</p>
+        <p class="text-3xl m-3">總填寫人數：{{ records.length }}</p>
         <div>
-            <div v-for="(item, index)  in questions">
-                <div class="flex">
-                    <p class="text-2xl" v-if="item.required">*</p>
-                    <p class="text-2xl">{{ index + 1 }}. {{ item.question }}</p>
+            <div class="flex justify-around" v-for="(item, index)  in questions">
+                <div>
+                    <div class="flex">
+                        <p class="text-2xl" v-if="item.required">*</p>
+                        <p class="text-2xl">{{ index + 1 }}. {{ item.question }}</p>
+                    </div>
+                    <div class="ml-8 mt-2 mb-4" v-for="(select, index_s) in JSON.parse(item.selections)"> <label
+                            class="text-xl pl-4" :for="select">{{ select }}</label>
+                    </div>
                 </div>
-                <div class="ml-8 mt-2 mb-4" v-for="(select, index_s) in JSON.parse(item.selections)"> <label
-                        class="text-xl pl-4" :for="select">{{ select }}</label>
-                </div>
-                <Bar :labels="columns[index]" :vc_data="values[index]" />
                 <Doughnut :labels="columns[index]" :data="values[index]" />
             </div>
         </div>
@@ -26,11 +28,9 @@
 <script>
 import { mapState, mapActions } from "pinia";
 import indexStore from "../stores/counter";
-import Bar from "../components/Bar.vue";
 import Doughnut from "../components/Doughnut.vue";
 export default {
-    comments: {
-        Bar,
+    components: {
         Doughnut
     },
     data() {
@@ -51,11 +51,8 @@ export default {
     methods: {
         ...mapActions(indexStore, ["erase"]),
         toListPage() {
-            // this.erase()
-            // this.$router.push('/list')
-            this.dataAnalysis();
-            console.log(this.columns);
-            console.log(this.values);
+            this.erase()
+            this.$router.push('/list')
         },
         findData() {
             const body = {
@@ -104,6 +101,20 @@ export default {
             });
         },
     },
-    components: { Doughnut }
+    watch: {
+        // 监听questions和records的变化
+        questions: {
+            handler() {
+                this.dataAnalysis();
+            },
+            deep: true // 深度监听数组内部的变化
+        },
+        records: {
+            handler() {
+                this.dataAnalysis();
+            },
+            deep: true
+        }
+    },
 }
 </script>
