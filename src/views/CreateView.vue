@@ -151,7 +151,7 @@
             </button>
             <button @click="saveQandQ"
                 class="border-t border-r border-b border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
-                儲存
+                建立
             </button>
         </div>
     </div>
@@ -191,14 +191,14 @@ export default {
             oldQn: null,
             title: '',
             description: '',
-            startDate: this.getDate(0),
-            endDate: this.getDate(7),
+            startDate: this.getDate(-10),
+            endDate: this.getDate(-3),
 
             selectItems: 1,
             activeStep: 1,
-            minDate: this.getDate(0),
+            minDate: this.getDate(-10),
 
-            questionColumn: [{ key: 'question', value: '題目' }, { key: 'kind', value: '題型' }, { key: 'isRequired', value: '必填' }],
+            questionColumn: [{ key: 'question', value: '題目' }, { key: 'kind', value: '題型' }, { key: 'required', value: '必填' }],
             questionData: [],
             questionDataIndex: -1,
 
@@ -251,6 +251,7 @@ export default {
         },
         plusQ() {
             this.selectItems += this.selectItems < 10 ? 1 : 0
+            console.log(this.questionData)
         },
         minusQ() {
             this.selectItems -= this.selectItems > 1 ? 1 : 0
@@ -262,8 +263,8 @@ export default {
                 const q = {
                     'question': this.question,
                     'kind': this.kind,
-                    'isRequired': this.isRequired,
-                    'selection': JSON.stringify(this.selections)
+                    'is_required': this.isRequired,
+                    'selections': JSON.stringify(this.selections)
                 }
                 q.serialNumber = this.questionDataIndex > -1 ? this.questionDataIndex : null
                 this.questionData.push(q)
@@ -284,7 +285,8 @@ export default {
         },
         deleteQuestions() {
             const body = {
-                'serial_number_list': this.questionData.filter(item => item.selected).map(item => item.serialNumber)
+                'serial_number_list': this.questionData.filter(item => item.selected).map(item => item.serialNumber),
+                'qn_number': -1
             }
             fetch("http://localhost:8080/delete_questions", {
                 method: "DELETE",
@@ -296,30 +298,35 @@ export default {
                 .then(data => window.alert(data.message))
             this.findQuestions()
         },
-        saveQandQ() {
+        async saveQandQ() {
             const qn = JSON.parse(sessionStorage.getItem('newQuestionnaire'))
             let body = {
-                // 'serial_number': this.oldQn.serialNumber,
                 'title': qn.title,
                 'description': qn.description,
-                'start_time': qn.startDate,
-                'end_time': qn.endDate,
+                'start_date': qn.startDate,
+                'end_date': qn.endDate,
             }
-            if (this.oldQn) {
-                body.serial_number = this.oldQn.serialNumber
-                fetch("http://localhost:8080/revise_questionnaire", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(body)
-                }).then(res => res.json())
-                    .then(data => {
-                        window.alert(data.message)
-                    })
-                this.newSerialNumber = this.oldQn.serialNumber
+            body.serial_number = this.oldQn ? this.oldQn.serialNumber : null
+            const response1 = await fetch("http://localhost:8080/renew_questionnaire", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            })
+            const data1 = await response1.json();
+            if (data1.message != 'Success!') {
+                window.alert(data1.message)
             } else {
-                fetch("http://localhost:8080/add_questionnaire", {
+                body = {
+                    'questions_list': this.questionData.map(item => {
+                        return {
+                            ...item,
+                            'qnNumber': data1.questionnaire.serialNumber
+                        }
+                    })
+                }
+                fetch("http://localhost:8080/add_questions", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -328,26 +335,6 @@ export default {
                 }).then(res => res.json())
                     .then(data => window.alert(data.message))
             }
-
-
-            this.questionData = this.questionData.map(item => {
-                return {
-                    ...item,
-                    'qnNumber': this.newSerialNumber
-                }
-            })
-            console.log(this.questionData)
-            body = {
-                'questions_list': this.questionData
-            }
-            fetch("http://localhost:8080/add_questions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(body)
-            }).then(res => res.json())
-                .then(data => window.alert(data.message))
         },
         findQuestions() {
             const body = {
@@ -364,7 +351,7 @@ export default {
         },
         getDate(m) {
             const now = new Date();
-            now.setDate(now.getDate() + m); // 将日期加7天
+            now.setDate(now.getDate() + m); // 将日期加m天
             const year = now.getFullYear();
             const month = (now.getMonth() + 1).toString().padStart(2, '0');
             const day = now.getDate().toString().padStart(2, '0');

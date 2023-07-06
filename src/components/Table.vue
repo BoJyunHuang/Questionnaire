@@ -69,7 +69,9 @@ export default {
             this.$emit('choose', list); // 触发choose事件并将索引作为参数传递给父组件
         },
         toQPage(item) {
-            this.$emit('qPage', item);
+            if (item.status == '進行中' || this.builder == true) {
+                this.$emit('qPage', item);
+            }
         },
         toStatics(item) {
             this.$emit('statics', item);
@@ -101,13 +103,16 @@ export default {
                             v-model="item.selected"></td>
                     <td class="border border-slate-600 text-center">{{ item['serialNumber'] }}</td>
                     <td class="border border-slate-600 text-center">
-                        <a class="underline hover:no-underline cursor-pointer" @click="toQPage(item)">{{ item['title']
-                        }}</a>
+                        <a :class="{ 'underline': item.status == '進行中' || builder == true, 'cursor-pointer': item.status == '進行中' || builder == true }"
+                            @click="toQPage(item)">
+                            {{ item['title'] }}
+                        </a>
                     </td>
                     <td class="border border-slate-600 text-center" v-for="column in columns">{{ item[column.key] }}</td>
                     <!-- 印出該分頁對應標題的內容(欄) -->
                     <td class="border border-slate-600 text-center">
-                        <a class="underline hover:no-underline cursor-pointer" @click="toStatics(item)">觀看</a>
+                        <a class="underline hover:no-underline cursor-pointer" v-if="item.status != '尚未開始'"
+                            @click="toStatics(item)">觀看</a>
                     </td>
                 </tr>
             </tbody>
@@ -118,7 +123,7 @@ export default {
             <ul class="inline-flex items-center -space-x-px">
                 <li> <!-- 前頁 -->
                     <a href="#"
-                        class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700"
                         aria-label="Previous" @click="previousPage" :disabled="currentPage === 1">
                         <span class="sr-only">Previous</span>
                         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
@@ -131,30 +136,30 @@ export default {
                 </li> <!-- 至該分頁 -->
                 <li v-if="currentPage > 3">
                     <a href="#"
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
                         @click="goToPage(1)">1</a>
                 </li>
                 <li v-if="currentPage > 4">
                     <span
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white">...</span>
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">...</span>
                 </li>
                 <li v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }">
                     <a href="#"
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
                         @click="goToPage(page)">{{ page }}</a>
                 </li>
                 <li v-if="currentPage < totalPages - 3">
                     <span
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white">...</span>
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">...</span>
                 </li>
                 <li v-if="currentPage < totalPages - 2">
                     <a href="#"
-                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
                         @click="goToPage(totalPages)">{{ totalPages }}</a>
                 </li>
                 <li> <!-- 後頁 -->
                     <a href="#"
-                        class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-200 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700"
                         @click="nextPage" :disabled="currentPage === totalPages">
                         <span class="sr-only">Next</span>
                         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
