@@ -15,8 +15,14 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "pinia";
+import indexStore from "../stores/counter";
 export default {
+    computed: {
+        ...mapState(indexStore, ['questionnaire']),
+    },
     methods: {
+        ...mapActions(indexStore, ['erase']),
         previousPage() {
             this.$router.push('/check-page')
         },

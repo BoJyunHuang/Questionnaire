@@ -1,7 +1,7 @@
 <template>
     <div v-if="!isTest">
-        <p class="text-center p-5">問卷填寫期間：{{ questionnaire.startTime.replace('T', ' ') }} ~ {{
-            questionnaire.endTime.replace('T', ' ') }}</p>
+        <p class="text-center p-5">問卷填寫期間：{{ questionnaire.startDate }} ~ {{
+            questionnaire.endDate }}</p>
         <p class="text-2xl break-words m-12 px-32">{{ questionnaire.description }}</p>
         <p class="text-center text-2xl m-8">基本資料填寫</p>
         <div class="flex justify-center">
@@ -10,10 +10,7 @@
                     <th><label class="text-center">{{ item.title }}</label>
                         <p class="text-white" v-if='item.warn'>warn</p>
                     </th>
-                    <td><label :for='item.sub'
-                            class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-black">Search</label>
-                        <input :type='item.type' :id='item.sub' v-model="item.model"
-                            @input="updateModel(item.model, $event.target.value)"
+                    <td><input :type='item.type' :id='item.sub' v-model="item.model"
                             class="block w-72 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-200"
                             required>
                         <p class="mt-2 text-sm text-red-600" v-if='item.warn'>不能為空！請確實填寫</p>
@@ -35,11 +32,12 @@
     <div v-if="isTest">
         <div v-for="(item, index)  in questions">
             <div class="flex">
-                <p class="text-2xl" v-if="item.notEmpty">*</p>
+                <p class="text-2xl" v-if="item.required">*</p>
                 <p class="text-2xl">{{ index + 1 }}. {{ item.question }}</p>
             </div>
-            <div class="ml-8 mt-2 mb-4" v-for="(select, index) in JSON.parse(item.selection)">
-                <input :type="getInputType(item.kind)" :id="select" :value=index v-model="answers">
+            <div class="ml-8 mt-2 mb-4" v-for="(select, index_s) in JSON.parse(item.selections)">
+                <input :type="selectType(item.kind)" :name="item.selections" :id="select" :value="(index_s + 1)"
+                    v-model="answers[index]">
                 <label class="text-xl pl-4" :for="select">{{ select }}</label>
             </div>
         </div>
@@ -56,13 +54,12 @@
     </div>
 </template>
 <script>
-import { mapState, mapActions } from "pinia";
+import { mapState } from "pinia";
 import indexStore from "../stores/counter";
 export default {
     data() {
         return {
             info: [{ title: '姓名', sub: 'name', type: 'text', model: '', warn: false }, { title: '電話', sub: 'phone', type: 'tel', model: '', warn: false }, { title: 'Email', sub: 'email', type: 'email', model: '', warn: false }, { title: '年齡', sub: 'age', type: 'number', model: '', warn: false }],
-            selectType: { '單選方塊': 'radio', '多選方塊': 'checkbox', '文字': 'text' },
             questions: [],
             isTest: false,
             answers: [],
@@ -72,10 +69,6 @@ export default {
         ...mapState(indexStore, ['questionnaire']),
     },
     methods: {
-        ...mapActions(indexStore, ['erase']),
-        updateModel(model, value) {
-            this[model] = value;
-        },
         findQuestions() {
             const body = {
                 "qn_number": this.questionnaire.serialNumber,
@@ -91,6 +84,7 @@ export default {
         },
         previousPage() {
             this.erase()
+            sessionStorage.clear()
             this.$router.push('/list')
         },
         startTest() {
@@ -107,12 +101,23 @@ export default {
                 this.isTest = true
             }
         },
-        getInputType(kind) {
-            return this.selectType[kind] || 'text';
+        selectType(kind) {
+            const selectType = {
+                "單選方塊": 'radio',
+                "多選方塊": 'checkbox',
+                "文字": 'text'
+            };
+            return selectType[kind] || 'radio';
         },
-        nextPage() {
-            console.log(this.answers)
-            // this.$router.push('/check-page')
+        async nextPage() {
+            try {
+                sessionStorage.setItem("info", JSON.stringify(this.info));
+                sessionStorage.setItem("answers", JSON.stringify(this.answers));
+                await new Promise(resolve => setTimeout(resolve, 100)); // 等待一小段时间，确保 sessionStorage 设置完成
+                this.$router.push('/check-page');
+            } catch (error) {
+                console.error(error);
+            }
         }
     },
     mounted() {

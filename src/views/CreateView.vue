@@ -191,12 +191,12 @@ export default {
             oldQn: null,
             title: '',
             description: '',
-            startDate: this.getDate(-10),
-            endDate: this.getDate(-3),
+            startDate: this.getDate(0),
+            endDate: this.getDate(7),
 
             selectItems: 1,
             activeStep: 1,
-            minDate: this.getDate(-10),
+            minDate: this.getDate(0),
 
             questionColumn: [{ key: 'question', value: '題目' }, { key: 'kind', value: '題型' }, { key: 'required', value: '必填' }],
             questionData: [],
