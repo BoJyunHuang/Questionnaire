@@ -392,6 +392,7 @@ export default {
                     body: JSON.stringify(body)
                 }).then(res => res.json())
                     .then(data => window.alert(data.message))
+                this.$router.push('/list')
             }
         },
         findQuestions() {
