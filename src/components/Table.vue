@@ -100,7 +100,7 @@ export default {
             <tbody> <!-- 表個內容 -->
                 <tr v-for="(item, index) in paginatedData" :key="item.id"> <!-- 印出該分頁筆數(列) -->
                     <td class="border border-slate-600 text-center" v-if="builder"><input type="checkbox" id=item
-                            v-model="item.selected"></td>
+                            :disabled="item.status != '尚未開始'" v-model="item.selected"></td>
                     <td class="border border-slate-600 text-center">{{ item['serialNumber'] }}</td>
                     <td class="border border-slate-600 text-center">
                         <a :class="{ 'underline': item.status == '進行中' || builder == true, 'cursor-pointer': item.status == '進行中' || builder == true }"

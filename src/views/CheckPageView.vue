@@ -5,7 +5,7 @@
         <p class="text-2xl py-1">電話: {{ tel }}</p>
         <p class="text-2xl py-1">信箱: {{ email }}</p>
         <p class="text-2xl py-1">年齡: {{ age }}</p>
-        <div>
+        <div class="my-5">
             <div v-for="(item, index)  in questions">
                 <div class="flex">
                     <p class="text-2xl" v-if="item.required">*</p>
@@ -19,11 +19,11 @@
             </div>
         </div>
         <div class="flex justify-center p-4">
-            <button @click="previousPage"
+            <button @click="previousPage" v-if="!fromCreate"
                 class="border border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">
                 修改
             </button>
-            <button @click="nextPage"
+            <button @click="nextPage" v-if="!fromCreate"
                 class="border border-slate-950 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
                 確認
             </button>
@@ -43,6 +43,8 @@ export default {
             age: 0,
             questions: [],
             answers: [],
+
+            fromCreate: false,
         }
     },
     mounted() {
@@ -52,6 +54,7 @@ export default {
         this.email = JSON.parse(sessionStorage.getItem('info'))[2].model
         this.age = JSON.parse(sessionStorage.getItem('info'))[3].model
         this.answers = JSON.parse(sessionStorage.getItem('answers'))
+        this.fromCreate = this.$route.query.p1 == 'fromCreate' ? true : false
     },
     computed: {
         ...mapState(indexStore, ['questionnaire']),
