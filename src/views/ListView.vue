@@ -120,29 +120,33 @@ export default {
             this.$router.push('/create')
         },
         deleteQn() {
-            const body = {
-                'serial_number_list': this.questionData.filter(item => item.selected).map(item => item.serialNumber),
-                'qn_number': -1
+            const result = window.confirm("是否要刪除?");
+            if (result) {
+                const body = {
+                    'serial_number_list': this.questionData.filter(item => item.selected).map(item => item.serialNumber),
+                    'qn_number': -1
+                }
+                fetch("http://localhost:8080/delete_questionnaire", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                }).then(res => res.json())
+                    .then(data => window.alert(data.message))
+                const bodyQ = {
+                    'qn_number_list': this.questionData.filter(item => item.selected).map(item => item.serialNumber),
+                }
+                fetch("http://localhost:8080/delete_questions", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(bodyQ)
+                })
+                this.findAllQn()
             }
-            fetch("http://localhost:8080/delete_questionnaire", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(body)
-            }).then(res => res.json())
-                .then(data => window.alert(data.message))
-            const bodyQ = {
-                'qn_number_list': this.questionData.filter(item => item.selected).map(item => item.serialNumber),
-            }
-            fetch("http://localhost:8080/delete_questions", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(bodyQ)
-            })
-            this.findAllQn()
+
         },
         findTarget() {
             // 根据关键字和日期范围进行筛选
